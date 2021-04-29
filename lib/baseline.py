@@ -164,6 +164,10 @@ def clipInputs(outputFolder, studyAreaMaskBuff, inputDEM, inputLC, inputSoil, in
             arcpy.env.compression = "None"
             arcpy.CopyRaster_management(inputDEM, DEMCopy)
             arcpy.Clip_management(DEMCopy, "#", outputDEM, studyAreaMaskBuff, clipping_geometry="ClippingGeometry")
+
+            # Delete copy of DEM
+            arcpy.Delete_management(DEMCopy)
+
         else:
             arcpy.Clip_management(inputDEM, "#", outputDEM, studyAreaMaskBuff, clipping_geometry="ClippingGeometry")
 
@@ -184,6 +188,9 @@ def clipInputs(outputFolder, studyAreaMaskBuff, inputDEM, inputLC, inputSoil, in
 
             arcpy.Clip_management(lcResample, "#", outputLC, studyAreaMaskBuff, clipping_geometry="ClippingGeometry")
 
+            # Delete resampled LC
+            arcpy.Delete_management(lcResample)
+
         elif lcFormat in ['ShapeFile', 'FeatureClass']:
             arcpy.Clip_analysis(inputLC, studyAreaMaskBuff, outputLC, configuration.clippingTolerance)
 
@@ -197,6 +204,9 @@ def clipInputs(outputFolder, studyAreaMaskBuff, inputDEM, inputLC, inputSoil, in
 
             arcpy.Clip_management(soilResample, "#", outputSoil, studyAreaMaskBuff, clipping_geometry="ClippingGeometry")
 
+            # Delete resampled soil
+            arcpy.Delete_management(soilResample)
+
         elif soilFormat in ['ShapeFile', 'FeatureClass']:
             arcpy.Clip_analysis(inputSoil, studyAreaMaskBuff, outputSoil, configuration.clippingTolerance)
 
@@ -205,6 +215,7 @@ def clipInputs(outputFolder, studyAreaMaskBuff, inputDEM, inputLC, inputSoil, in
             outputStream = None
         else:
             arcpy.Clip_analysis(inputStreamNetwork, studyAreaMaskBuff, outputStream, configuration.clippingTolerance)
+
 
         log.info("Input data clipped successfully")
 

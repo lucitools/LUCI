@@ -308,6 +308,10 @@ def function(params):
                 arcpy.PolygonToRaster_conversion(clippedSoil, soilCode, outputSoilras, "CELL_CENTER", "", cellsizedem)
                 log.info('Soil raster produced')
 
+            # Delete intermediate files
+            arcpy.Delete_management(clippedLC)
+            arcpy.Delete_management(clippedSoil)
+
             progress.logProgress(codeBlock, outputFolder)
 
         ###########################

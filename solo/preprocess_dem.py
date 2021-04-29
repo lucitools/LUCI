@@ -88,6 +88,9 @@ def function(outputFolder, DEM, studyAreaMask, streamInput, minAccThresh, majAcc
                 arcpy.CopyRaster_management(DEM, DEMTemp)
                 arcpy.CopyRaster_management(Float(DEMTemp), rawDEM, pixel_type="32_BIT_FLOAT")
 
+                # Delete temporary DEM
+                arcpy.Delete_management(DEMTemp)
+
             # Calculate statistics for raw DEM
             arcpy.CalculateStatistics_management(rawDEM)
 
@@ -102,20 +105,15 @@ def function(outputFolder, DEM, studyAreaMask, streamInput, minAccThresh, majAcc
 
             Reclassify(rawDEM, "Value", RemapRange([[-999999.9, 999999.9, 1]]), "NODATA").save(multRaster)
             progress.logProgress(codeBlock, outputFolder)
-
-        codeBlock = 'Calculate slope'
+        
+        codeBlock = 'Calculate slope in percent'
         if not progress.codeSuccessfullyRun(codeBlock, outputFolder, rerun):
-
-            
-            intSlopeRawDeg = Slope(rawDEM, "DEGREE")
-            intSlopeRawDeg.save(slopeRawDeg)
-            del intSlopeRawDeg
 
             intSlopeRawPer = Slope(rawDEM, "PERCENT_RISE")
             intSlopeRawPer.save(slopeRawPer)
             del intSlopeRawPer
 
-            log.info('Slope calculated')
+            log.info('Slope calculated in percent')
 
             progress.logProgress(codeBlock, outputFolder)
 

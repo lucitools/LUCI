@@ -421,6 +421,9 @@ def extractRasterMask(raster):
 
     arcpy.RasterToPolygon_conversion(rasterMask, polyMask, "NO_SIMPLIFY", "VALUE")
 
+    # Delete raster mask
+    arcpy.Delete_management(rasterMask)
+
     return polyMask
 
 def checkCoverage(maskA, maskB, inputFile=None):
@@ -495,6 +498,11 @@ def checkCoverage(maskA, maskB, inputFile=None):
 
                 warning = 'Please check this input: ' + str(inputFile)
                 log.warning(warning)
+
+        # Delete temporary masks
+        arcpy.Delete_management(maskACopy)
+        arcpy.Delete_management(maskBCopy)
+        arcpy.Delete_management(maskACoverage)
 
     else:
         log.warning('Coverage discrepancies between soil, land use, and coverage extent not checked as advanced license not present.')

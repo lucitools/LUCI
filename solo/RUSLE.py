@@ -152,20 +152,33 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
             resampledRainTemp = arcpy.sa.ApplyEnvironment(rData)
             resampledRainTemp.save(rainResample)
+            del resampledRainTemp
 
             if soilData is not None: 
                 resampledSoilTemp = arcpy.sa.ApplyEnvironment(soilRas)
                 resampledSoilTemp.save(soilResample)
+                del resampledSoilTemp
+
+                # Delete soil raster
+                arcpy.Delete_management(soilRas)
 
             if landCoverData is not None:
                 resampledLCTemp = arcpy.sa.ApplyEnvironment(landCoverRas)
                 resampledLCTemp.save(lcResample)
+                del resampledLCTemp
+
+                # Delete land cover raster
+                arcpy.Delete_management(landCoverRas)
 
             if supportData is not None:
 
                 arcpy.CopyRaster_management(supportData, supportCopy)                
                 resampledPTemp = arcpy.sa.ApplyEnvironment(supportCopy)
                 resampledPTemp.save(supportResample)
+                del resampledPTemp
+
+                # Delete support raster
+                arcpy.Delete_management(supportCopy)
 
             log.info("Inputs resampled")
 
@@ -178,14 +191,26 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
             arcpy.Clip_management(rainResample, "#", rainClip, studyMask, clipping_geometry="ClippingGeometry")
 
+            # Delete resampled R-factor
+            arcpy.Delete_management(rainResample)
+
             if soilData is not None: 
                 arcpy.Clip_management(soilResample, "#", soilClip, studyMask, clipping_geometry="ClippingGeometry")
+
+                # Delete resampled soil
+                arcpy.Delete_management(soilResample)
 
             if landCoverData is not None:
                 arcpy.Clip_management(lcResample, "#", landCoverClip, studyMask, clipping_geometry="ClippingGeometry")
 
+                # Delete resampled land cover
+                arcpy.Delete_management(lcResample)
+
             if supportData is not None:
                 arcpy.Clip_management(supportResample, "#", supportClip, studyMask, clipping_geometry="ClippingGeometry")
+
+                # Delete resampled support data
+                arcpy.Delete_management(supportResample)
 
             log.info("Inputs clipped")
 
@@ -218,6 +243,9 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
             # Copy resampled raster
             arcpy.CopyRaster_management(rainClip, rFactor)
 
+            # Delete clipped R-factor
+            arcpy.Delete_management(rainClip)
+
             log.info("R-factor layer produced")
 
             progress.logProgress(codeBlock, outputFolder)
@@ -239,6 +267,7 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
                 # Produce slope cutoff raster
                 DEMSlopeCutTemp = Con(Raster(DEMSlopePerc) > float(cutoffPercent), float(cutoffPercent), Raster(DEMSlopePerc))
                 DEMSlopeCutTemp.save(DEMSlopeCut)
+                del DEMSlopeCutTemp
 
                 # Calculate the parts of the LS-factor equation separately
                 lsCalcA = (cellsizedem / 22.0) ** 0.5
@@ -247,6 +276,11 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
                 # Calculate the LS-factor
                 lsOrigTemp = lsCalcA * lsCalcB
                 lsOrigTemp.save(lsFactor)
+
+                # Delete temporary files
+                del lsCalcB
+                del lsOrigTemp
+                arcpy.Delete_management(DEMSlopeCut)
 
                 log.info("LS-factor layer produced")
 
@@ -262,10 +296,12 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
                 # Produce slope cutoff raster
                 DEMSlopeCutTemp = Con(Raster(DEMSlope) > float(cutoffAngle), float(cutoffAngle), Raster(DEMSlope))
                 DEMSlopeCutTemp.save(DEMSlopeCut)
+                del DEMSlopeCutTemp
 
                 # Convert from degrees to radian
                 DEMSlopeRadTemp = Raster(DEMSlopeCut) * 0.01745
                 DEMSlopeRadTemp.save(DEMSlopeRad)
+                del DEMSlopeRadTemp
 
                 # Currently hardcoded, but should have them as options in future
                 m = 0.5
@@ -273,9 +309,16 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
                 upslopeAreaTemp = Raster(hydFAC) * float(cellsizedem)
                 upslopeAreaTemp.save(upslopeArea)
+                del upslopeAreaTemp
 
                 lsFactorTemp = (m + 1) * Power(Raster(upslopeArea) / 22.1, float(m)) * Power(Sin(Raster(DEMSlopeRad)) / 0.09, float(n))
                 lsFactorTemp.save(lsFactor)
+                del lsFactorTemp
+
+                # Delete temporary files
+                arcpy.Delete_management(DEMSlopeCut)
+                arcpy.Delete_management(DEMSlopeRad)
+                arcpy.Delete_management(upslopeArea)
 
                 log.info("LS-factor layer produced")
 
@@ -297,15 +340,25 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
                 arcpy.JoinField_management(soilClip, "VALUE", kTable, "MU_GLOBAL")
                 arcpy.CopyRaster_management(soilClip, soilJoin)
 
+                # Delete temporary files
+                arcpy.Delete_management(soilClip)
+
                 kOrigTemp = Lookup(soilJoin, "K_Stewart")
                 kOrigTemp.save(kFactor)
+
+                # Delete temporary files
+                del kOrigTemp
+                arcpy.Delete_management(soilJoin)
 
             elif soilOption == 'LocalSoil':
 
                 # User input is their own K-factor dataset
-
                 kOrigTemp = Raster(soilClip)
                 kOrigTemp.save(kFactor)
+
+                # Delete temporary files
+                del kOrigTemp
+                arcpy.Delete_management(soilClip)
 
             else:
                 log.error('Invalid soil erodibility option')
@@ -326,15 +379,24 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
                 # Use LC from the preprocess folder
 
-                arcpy.CopyRaster_management(inputLC, landCoverClip)
+                # arcpy.CopyRaster_management(inputLC, landCoverClip)
 
                 cTable = os.path.join(configuration.tablesPath, "rusle_esacci.dbf")
+
+                log.info("DEBUG: landCoverClip: " + str(landCoverClip))
+                log.info("DEBUG: cTable: " + str(cTable))
 
                 arcpy.JoinField_management(landCoverClip, "VALUE", cTable, "LC_CODE")
                 arcpy.CopyRaster_management(landCoverClip, lcJoin)
 
+                arcpy.Delete_management(landCoverClip)
+
                 cOrigTemp = Lookup(lcJoin, "CFACTOR")
                 cOrigTemp.save(cFactor)
+
+                # Delete temporary files
+                del cOrigTemp                
+                arcpy.Delete_management(lcJoin)
 
             elif lcOption == 'LocalCfactor':
 
@@ -342,6 +404,10 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
                 cOrigTemp = Raster(landCoverClip)
                 cOrigTemp.save(cFactor)
+
+                # Delete temporary files
+                del cOrigTemp
+                arcpy.Delete_management(landCoverClip)
 
             else:
                 log.error('Invalid C-factor option')
@@ -361,6 +427,9 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
             if supportData is not None:
                 arcpy.CopyRaster_management(supportClip, pFactor)
                 log.info("P-factor layer produced")
+
+                # Delete temporary files
+                arcpy.Delete_management(supportClip)
 
             progress.logProgress(codeBlock, outputFolder)
 
@@ -383,7 +452,7 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
             else:           
                 soilLossTemp.save(soilLoss)
-            
+
             log.info("RUSLE function completed successfully")
 
             progress.logProgress(codeBlock, outputFolder)
