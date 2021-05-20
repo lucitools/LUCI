@@ -16,7 +16,8 @@ import LUCI_SEEA.solo.RUSLE as RUSLE
 from LUCI_SEEA.lib.refresh_modules import refresh_modules
 refresh_modules([log, common, RUSLE])
 
-def function(outputFolder, yearAFolder, yearBFolder, lsOption, rData, soilData, soilCode, YearALCData, YearALCCode, YearBLCData, YearBLCCode, YearAPData, YearBPData, saveFactors):
+def function(outputFolder, yearAFolder, yearBFolder, lsOption, slopeAngle, rData, soilData, soilCode,
+             YearALCData, YearALCCode, YearBLCData, YearBLCCode, YearAPData, YearBPData, saveFactors):
 
     try:
         # Set temporary variables
@@ -52,7 +53,7 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, rData, soilData, 
         studyMaskA = filesA.studyareamask
 
         # Call RUSLE function for Year A        
-        soilLoss = RUSLE.function(outputFolder, yearAFolder, lsOption,
+        soilLoss = RUSLE.function(outputFolder, yearAFolder, lsOption, slopeAngle,
                                   soilOption, soilData, soilCode,
                                   lcOption, YearALCData, YearALCCode,
                                   rData, saveFactors, YearAPData)
@@ -74,7 +75,7 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, rData, soilData, 
         studyMaskB = filesB.studyareamask
 
         # Call RUSLE function for Year B
-        soilLoss = RUSLE.function(outputFolder, yearBFolder, lsOption,
+        soilLoss = RUSLE.function(outputFolder, yearBFolder, lsOption, slopeAngle,
                                   soilOption, soilData, soilCode,
                                   lcOption, YearBLCData, YearBLCCode,
                                   rData, saveFactors, YearBPData)
@@ -98,10 +99,12 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, rData, soilData, 
 
         diffTemp = Raster(lossB) - Raster(lossA)
         diffTemp.save(diffLoss)
+        del diffTemp
 
         log.info('Removing the areas of zero difference')
         diffNullTemp = SetNull(diffLoss, diffLoss, "VALUE = 0")
         diffNullTemp.save(diffNullZero)
+        del diffNullTemp
 
         arcpy.CopyRaster_management(diffNullZero, soilLossDiff)
 

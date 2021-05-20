@@ -105,9 +105,19 @@ class RUSLE(object):
         param.datatype = u'String'
         param.value = u'Calculate based on slope and length only'
         param.filter.list = [u'Calculate based on slope and length only', u'Include upslope contributing area']
-        params.append(param) 
-        
-        # 7 K-factor option
+        params.append(param)
+
+        # 7 LSfactor: cutoff slope angle
+        param = arcpy.Parameter()
+        param.name = u'LSfactor_cutoff_angle'
+        param.displayName = u'LS-factor: Cutoff slope angle (degrees)'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Double'
+        param.value = u'26.6'
+        params.append(param)
+
+        # 8 K-factor option
         param = arcpy.Parameter()
         param.name = u'Kfactor_option'
         param.displayName = u'K-factor: Soil erodibility option'
@@ -118,7 +128,7 @@ class RUSLE(object):
         param.filter.list = [u'Use preprocessed soil data', u'Use local K-factor dataset']
         params.append(param)
 
-        # 8 Soils
+        # 9 Soils
         param = arcpy.Parameter()
         param.name = u'Soils'
         param.displayName = u'K-factor: Soil erodibility dataset'
@@ -127,7 +137,7 @@ class RUSLE(object):
         param.datatype = [u'Feature Class', u'Raster Layer']
         params.append(param)
 
-        # 9 Soil_linking_code
+        # 10 Soil_linking_code
         param = arcpy.Parameter()
         param.name = u'Soil_linking_code'
         param.displayName = u'K-factor: Soil linking code'
@@ -136,7 +146,7 @@ class RUSLE(object):
         param.datatype = u'String'        
         params.append(param)
 
-        # 10 C-factor option
+        # 11 C-factor option
         param = arcpy.Parameter()
         param.name = u'Cfactor_option'
         param.displayName = u'C-factor: Land cover option'
@@ -147,7 +157,7 @@ class RUSLE(object):
         param.filter.list = [u'Use preprocessed land cover data', u'Use local C-factor dataset']
         params.append(param)
 
-        # 11 Land_cover
+        # 12 Land_cover
         param = arcpy.Parameter()
         param.name = u'Land_cover'
         param.displayName = u'C-factor: Cover factor dataset'
@@ -156,7 +166,7 @@ class RUSLE(object):
         param.datatype = [u'Feature Class', u'Raster Layer']
         params.append(param)
 
-        # 12 Land_cover_linking_code
+        # 13 Land_cover_linking_code
         param = arcpy.Parameter()
         param.name = u'Land_cover_linking_code'
         param.displayName = u'C-factor: Land cover linking code'
@@ -165,7 +175,7 @@ class RUSLE(object):
         param.datatype = u'String'
         params.append(param)
 
-        # 13 Pfactor_dataset
+        # 14 Pfactor_dataset
         param = arcpy.Parameter()
         param.name = u'Pfactor_dataset'
         param.displayName = u'P-factor: Support practice dataset'
@@ -174,7 +184,7 @@ class RUSLE(object):
         param.datatype = 'Raster Layer'
         params.append(param)
 
-        # 14 Save_factor_layers
+        # 15 Save_factor_layers
         param = arcpy.Parameter()
         param.name = u'Save_factor_layers'
         param.displayName = u'Save factor layers?'
@@ -184,7 +194,7 @@ class RUSLE(object):
         param.value = u'False'
         params.append(param)
 
-        # 15 Rerun_tool
+        # 16 Rerun_tool
         param = arcpy.Parameter()
         param.name = u'Rerun_tool'
         param.displayName = u'Rerun tool (will continue previous run from the point where any errors occurred)'

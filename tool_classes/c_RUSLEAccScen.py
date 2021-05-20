@@ -125,9 +125,19 @@ class RUSLEAccScen(object):
         param.datatype = u'String'
         param.value = u'Calculate based on slope and length only'
         param.filter.list = [u'Calculate based on slope and length only', u'Include upslope contributing area']
-        params.append(param) 
+        params.append(param)
 
-        # 9 Rainfall erosivity
+        # 9 LSfactor: cutoff slope angle
+        param = arcpy.Parameter()
+        param.name = u'LSfactor_cutoff_angle'
+        param.displayName = u'LS-factor: Cutoff slope angle (degrees)'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Double'
+        param.value = u'26.6'
+        params.append(param)
+
+        # 10 Rainfall erosivity
         param = arcpy.Parameter()
         param.name = u'Rainfall_erosivity_A'
         param.displayName = u'R-factor for Year A: Rainfall erosivity dataset'
@@ -136,7 +146,7 @@ class RUSLEAccScen(object):
         param.datatype = u'Raster Layer'
         params.append(param)
 
-        # 10 Rainfall erosivity
+        # 11 Rainfall erosivity
         param = arcpy.Parameter()
         param.name = u'Rainfall_erosivity_B'
         param.displayName = u'R-factor for Year B: Rainfall erosivity dataset'
@@ -145,7 +155,7 @@ class RUSLEAccScen(object):
         param.datatype = u'Raster Layer'
         params.append(param)
 
-        # 11 Pfactor_dataset_A
+        # 12 Pfactor_dataset_A
         param = arcpy.Parameter()
         param.name = u'Pfactor_dataset_A'
         param.displayName = u'P-factor for Year A: Support practice dataset'
@@ -154,7 +164,7 @@ class RUSLEAccScen(object):
         param.datatype = 'Raster Layer'
         params.append(param)
 
-        # 12 Pfactor_dataset_B
+        # 13 Pfactor_dataset_B
         param = arcpy.Parameter()
         param.name = u'Pfactor_dataset_B'
         param.displayName = u'P-factor for Year B: Support practice dataset'

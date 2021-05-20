@@ -16,7 +16,7 @@ import LUCI_SEEA.solo.RUSLE as RUSLE
 from LUCI_SEEA.lib.refresh_modules import refresh_modules
 refresh_modules([log, common, RUSLE])
 
-def function(outputFolder, yearAFolder, yearBFolder, lsOption, yearARain, yearBRain, yearASupport, yearBSupport):
+def function(outputFolder, yearAFolder, yearBFolder, lsOption, slopeAngle, yearARain, yearBRain, yearASupport, yearBSupport):
 
     try:
         # Set temporary variables
@@ -58,7 +58,7 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, yearARain, yearBR
         studyMaskA = filesA.studyareamask
 
         # Call RUSLE function for Year A        
-        soilLoss = RUSLE.function(outputFolder, yearAFolder, lsOption, soilOption,
+        soilLoss = RUSLE.function(outputFolder, yearAFolder, lsOption, slopeAngle, soilOption,
                                   soilData, soilCode, lcOption, landCoverData,
                                   landCoverCode, yearARain, saveFactors, yearASupport)
 
@@ -79,7 +79,7 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, yearARain, yearBR
         studyMaskB = filesB.studyareamask
 
         # Call RUSLE function for Year B
-        soilLoss = RUSLE.function(outputFolder, yearBFolder, lsOption, soilOption,
+        soilLoss = RUSLE.function(outputFolder, yearBFolder, lsOption, slopeAngle, soilOption,
                                   soilData, soilCode, lcOption, landCoverData,
                                   landCoverCode, yearBRain, saveFactors, yearBSupport)
 
@@ -102,10 +102,12 @@ def function(outputFolder, yearAFolder, yearBFolder, lsOption, yearARain, yearBR
 
         diffTemp = Raster(lossB) - Raster(lossA)
         diffTemp.save(diffLoss)
+        del diffTemp
 
         log.info('Removing the areas of zero difference')
         diffNullTemp = SetNull(diffLoss, diffLoss, "VALUE = 0")
         diffNullTemp.save(diffNullZero)
+        del diffNullTemp
 
         arcpy.CopyRaster_management(diffNullZero, soilLossDiff)
 

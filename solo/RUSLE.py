@@ -7,6 +7,7 @@ import os
 import configuration
 import numpy as np
 import arcpy
+import math
 from arcpy.sa import Reclassify, RemapRange, RemapValue, Raster, Slope, Con, IsNull, Float, Power, Sin, SetNull, Lookup
 import LUCI_SEEA.lib.log as log
 import LUCI_SEEA.lib.progress as progress
@@ -16,7 +17,7 @@ from LUCI_SEEA.lib.external import six # Python 2/3 compatibility module
 from LUCI_SEEA.lib.refresh_modules import refresh_modules
 refresh_modules([log, common])
 
-def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soilCode, lcOption, landCoverData, landCoverCode, rData, saveFactors, supportData, rerun=False):
+def function(outputFolder, preprocessFolder, lsOption, slopeAngle, soilOption, soilData, soilCode, lcOption, landCoverData, landCoverCode, rData, saveFactors, supportData, rerun=False):
 
     try:
         # Set temporary variables
@@ -257,9 +258,11 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
         codeBlock = 'Produce LS-factor layer'
         if not progress.codeSuccessfullyRun(codeBlock, outputFolder, rerun):
 
-            cutoffPercent = 50.0 # Hardcoded for now (approx 45 degrees)
-            cutoffAngle = 45.0
-
+            # Calculate the threshold slope angle in percent
+            lsFactorRad = float(slopeAngle) * (math.pi / 180.0)
+            riseRun = math.tan(lsFactorRad)
+            cutoffPercent = riseRun * 100.0
+            
             if lsOption == 'SlopeLength':
 
                 log.info("Calculating LS-factor based on slope length and steepness only")
@@ -294,7 +297,7 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
                 log.info("Calculating LS-factor including upslope contributing area")
 
                 # Produce slope cutoff raster
-                DEMSlopeCutTemp = Con(Raster(DEMSlope) > float(cutoffAngle), float(cutoffAngle), Raster(DEMSlope))
+                DEMSlopeCutTemp = Con(Raster(DEMSlope) > float(slopeAngle), float(slopeAngle), Raster(DEMSlope))
                 DEMSlopeCutTemp.save(DEMSlopeCut)
                 del DEMSlopeCutTemp
 
@@ -379,12 +382,9 @@ def function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soi
 
                 # Use LC from the preprocess folder
 
-                # arcpy.CopyRaster_management(inputLC, landCoverClip)
+                arcpy.CopyRaster_management(inputLC, landCoverClip)
 
                 cTable = os.path.join(configuration.tablesPath, "rusle_esacci.dbf")
-
-                log.info("DEBUG: landCoverClip: " + str(landCoverClip))
-                log.info("DEBUG: cTable: " + str(cTable))
 
                 arcpy.JoinField_management(landCoverClip, "VALUE", cTable, "LC_CODE")
                 arcpy.CopyRaster_management(landCoverClip, lcJoin)

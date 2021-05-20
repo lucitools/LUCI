@@ -24,25 +24,26 @@ def function(params):
 
         # LS-factor
         slopeOption = pText[6]
+        slopeAngle = pText[7]
 
         # K-factor
-        kOption = pText[7]
-        soilData = pText[8]
-        soilCode = pText[9]
+        kOption = pText[8]
+        soilData = pText[9]
+        soilCode = pText[10]
 
         # C-factor
-        cOption = pText[10]
-        landCoverData = pText[11]
-        landCoverCode = pText[12]
+        cOption = pText[11]
+        landCoverData = pText[12]
+        landCoverCode = pText[13]
 
         # P-factor
-        supportData = pText[13]
+        supportData = pText[14]
 
-        saveFactors = common.strToBool(pText[14])
+        saveFactors = common.strToBool(pText[15])
 
         # Rerun parameter may not present when tool run as part of a batch run tool. If it is not, set rerun to False.
         try:
-            rerun = common.strToBool(pText[15])
+            rerun = common.strToBool(pText[16])
         except IndexError:
             rerun = False
         except Exception:
@@ -99,7 +100,7 @@ def function(params):
             sys.exit()
 
         # Call RUSLE function
-        soilLoss = RUSLE.function(outputFolder, preprocessFolder, lsOption, soilOption, soilData, soilCode,
+        soilLoss = RUSLE.function(outputFolder, preprocessFolder, lsOption, slopeAngle, soilOption, soilData, soilCode,
                                   lcOption, landCoverData, landCoverCode, rData, saveFactors, supportData,
                                   rerun)
 

@@ -21,19 +21,20 @@ def function(params):
 
         # Inputs constant between the two years
         slopeOption = pText[8]
-        rData = pText[9]
-        soilData = pText[10]
-        soilCode = pText[11]
+        slopeAngle = pText[9]
+        rData = pText[10]
+        soilData = pText[11]
+        soilCode = pText[12]
 
         # Land covers
-        YearALCData = pText[12]
-        YearALCCode = pText[13]
-        YearBLCData = pText[14]
-        YearBLCCode = pText[15]
+        YearALCData = pText[13]
+        YearALCCode = pText[14]
+        YearBLCData = pText[15]
+        YearBLCCode = pText[16]
 
         # Support factors
-        YearAPData = pText[16]
-        YearBPData = pText[17]
+        YearAPData = pText[17]
+        YearBPData = pText[18]
         
         saveFactors = False
 
@@ -62,7 +63,7 @@ def function(params):
         # Call RUSLE_accounts function
 
         RUSLE_accounts.function(outputFolder, yearAFolder, yearBFolder,
-                                lsOption, rData, soilData, soilCode,
+                                lsOption, slopeAngle, rData, soilData, soilCode,
                                 YearALCData, YearALCCode, YearBLCData, YearBLCCode,
                                 YearAPData, YearBPData, saveFactors)
 

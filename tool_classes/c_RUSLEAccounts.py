@@ -125,9 +125,19 @@ class RUSLEAccounts(object):
         param.datatype = u'String'
         param.value = u'Calculate based on slope and length only'
         param.filter.list = [u'Calculate based on slope and length only', u'Include upslope contributing area']
-        params.append(param) 
+        params.append(param)
 
-        # 9 Rainfall erosivity
+        # 9 LSfactor: cutoff slope angle
+        param = arcpy.Parameter()
+        param.name = u'LSfactor_cutoff_angle'
+        param.displayName = u'LS-factor: Cutoff slope angle (degrees)'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Double'
+        param.value = u'26.6'
+        params.append(param)
+
+        # 10 Rainfall erosivity
         param = arcpy.Parameter()
         param.name = u'Rainfall_erosivity'
         param.displayName = u'R-factor: Rainfall erosivity dataset'
@@ -136,7 +146,7 @@ class RUSLEAccounts(object):
         param.datatype = u'Raster Layer'
         params.append(param)
         
-        # 10 Soils
+        # 11 Soils
         param = arcpy.Parameter()
         param.name = u'Erodibility_dataset'
         param.displayName = u'K-factor: Soil erodibility dataset'
@@ -145,7 +155,7 @@ class RUSLEAccounts(object):
         param.datatype = [u'Feature Class', u'Raster Layer']
         params.append(param)
 
-        # 11 Soil_linking_code
+        # 12 Soil_linking_code
         param = arcpy.Parameter()
         param.name = u'Soil_linking_code'
         param.displayName = u'K-factor: Soil linking code'
@@ -154,7 +164,7 @@ class RUSLEAccounts(object):
         param.datatype = u'String'        
         params.append(param)
 
-        # 12 Land_cover_A
+        # 13 Land_cover_A
         param = arcpy.Parameter()
         param.name = u'Land_cover_A'
         param.displayName = u'C-factor for Year A: Land cover factor dataset'
@@ -163,7 +173,7 @@ class RUSLEAccounts(object):
         param.datatype = [u'Feature Class', u'Raster Layer']
         params.append(param)
 
-        # 13 Land_cover_linking_code_A
+        # 14 Land_cover_linking_code_A
         param = arcpy.Parameter()
         param.name = u'Land_cover_linking_code_A'
         param.displayName = u'C-factor for Year A: Land cover linking code'
@@ -172,7 +182,7 @@ class RUSLEAccounts(object):
         param.datatype = u'String'
         params.append(param)
 
-        # 14 Land_cover_B
+        # 15 Land_cover_B
         param = arcpy.Parameter()
         param.name = u'Land_cover_B'
         param.displayName = u'C-factor for Year B: Land cover factor dataset'
@@ -181,7 +191,7 @@ class RUSLEAccounts(object):
         param.datatype = [u'Feature Class', u'Raster Layer']
         params.append(param)
 
-        # 15 Land_cover_linking_code_B
+        # 16 Land_cover_linking_code_B
         param = arcpy.Parameter()
         param.name = u'Land_cover_linking_code_B'
         param.displayName = u'C-factor for Year B: Land cover linking code'
@@ -190,7 +200,7 @@ class RUSLEAccounts(object):
         param.datatype = u'String'
         params.append(param)
 
-        # 16 Pfactor_dataset_A
+        # 17 Pfactor_dataset_A
         param = arcpy.Parameter()
         param.name = u'Pfactor_dataset_A'
         param.displayName = u'P-factor for Year A: Support practice dataset'
@@ -199,7 +209,7 @@ class RUSLEAccounts(object):
         param.datatype = 'Raster Layer'
         params.append(param)
 
-        # 17 Pfactor_dataset_B
+        # 18 Pfactor_dataset_B
         param = arcpy.Parameter()
         param.name = u'Pfactor_dataset_B'
         param.displayName = u'P-factor for Year B: Support practice dataset'
